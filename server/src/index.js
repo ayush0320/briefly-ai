@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './utils/db.js';
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/user.js';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -20,6 +22,11 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.json({ message: 'Server is running!' });
 });
+
+// Import and use auth routes
+app.use('/api/auth', authRoutes);
+// Import and use user routes
+app.use('/api/user', userRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
