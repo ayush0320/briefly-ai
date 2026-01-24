@@ -5,6 +5,7 @@ import connectDB from './utils/db.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import newsRoutes from './routes/newsRoutes.js';
+import aiNewsRoutes from './routes/aiNewsRoutes.js';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -24,12 +25,10 @@ app.get('/', (req, res) => {
     res.json({ message: 'Server is running!' });
 });
 
-// Import and use auth routes
 app.use('/api/auth', authRoutes);
-// Import and use user routes
 app.use('/api/user', userRoutes);
-// Import and use news routes
 app.use('/api/news', newsRoutes);
+app.use('/api/news', aiNewsRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
