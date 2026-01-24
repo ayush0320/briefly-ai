@@ -1,5 +1,18 @@
 import { GoogleGenAI } from "@google/genai";
 
+// Remove Markdown code fences if Gemini wrapped the JSON in ```json ... ```
+
+function stripMarkdownJson(text) {
+  if (!text) return text;
+
+  // Remove triple-backtick code fences (with optional "json")
+  return text
+    .replace(/^```json\s*/i, '')  // remove starting ```json
+    .replace(/^```\s*/i, '')      // remove starting ``` (if no json tag)
+    .replace(/\s*```$/i, '')      // remove ending ```
+    .trim();
+}
+
 // Summarize news content + provide credibility analysis using Gemini
 
 export async function summarizeWithGemini(content) {
@@ -31,7 +44,12 @@ ${content}
     const text = response.text;
 
   try {
-    return JSON.parse(text);
+    // console.log("Gemini raw response:", text);
+
+    const cleanedText = stripMarkdownJson(text);
+
+    return JSON.parse(cleanedText);
+    
   } catch (error) {
     return {
         summary: text,
