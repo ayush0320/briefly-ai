@@ -6,7 +6,29 @@ import e from 'express';
 
 const router = express.Router();
 
+// Public endpoint without JWT authentication
+// Use default topics when user is not logged in
+// Load the homepage news feed
+// GET /api/news/public
+
+router.get('/public', async (req, res) => {
+    try {
+        // Use default topics
+        const topics = ["National", "International", "Technology", "Sports", "Entertainment"];
+        const articles = await fetchNewsByTopic(topics);
+
+        return res.json({
+            topics,
+            count: articles.length,
+            articles
+        })
+    } catch (error) {
+        return res.status(500).json({message:"Server Error", error:error.message});
+    }
+});
+
 /**
+ * Protected endpoint with JWT authentication
  * 1) Load the logged-in user's preferences
  * 2) Decide which topics to search
  * 3) Fetch relevant news articles
