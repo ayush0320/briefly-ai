@@ -4,6 +4,21 @@
     color-scheme: dark;
 }
 
-body{
-    @apply bg-midnight text-white font-sans;
+@theme {
+  --color-midnight: #0b0a16;
+  --color-neon-blue: #4cc3ff;
+  --color-soft-blue: #76b4ff;
+}
+
+body {
+  @apply bg-[color:var(--color-midnight)] text-white font-sans;
+}
+
+@utility glow-ring {
+  background: radial-gradient(
+    circle at center,
+    rgba(76, 195, 255, 0.35),
+    rgba(118, 180, 255, 0.05),
+    transparent 70%
+  );
 }
