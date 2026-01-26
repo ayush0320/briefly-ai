@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import api from "../utils/api.js";
+import api from "../utils/api.ts";
+import { toExcerpt } from "../utils/text.ts";
 
 // Represents the structure of a news article object returned by the server
 type NewsItem = {
@@ -35,11 +36,11 @@ const Hero = () => {
 
   return (
     <div>
-      <main className="relative mx-auto max-w-6xl px-6 py-14">
+      <div className="relative mx-auto max-w-6xl px-6 py-14">
         {/* Background heading */}
         <div className="text-center">
-          <p className="text-[160px] md:text-[220px] font-bold text-white/10 leading-none select-none">
-            Briefly
+          <p className="text-[160px] md:text-[150px] font-bold text-white/10 leading-none select-none">
+            News, briefly
           </p>
         </div>
 
@@ -83,8 +84,8 @@ const Hero = () => {
             ))}
           </div>
         )}
-      </main>
-
+      </div>
+      )
       {/* <div className="relative z-10 mx-auto max-w-6xl px-6 py-12">
         <div className="text-center">
           <p className="text-[180px] md:text-[240px] font-bold text-white/10 leading-none select-none">
