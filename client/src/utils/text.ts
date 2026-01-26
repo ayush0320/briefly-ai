@@ -3,7 +3,7 @@
 // Cut off after maxLength
 // Add "…" so the user knows it's shortened
 
-export const toExcerpt = (content: string, maxLength = 100) => {
+export const toExcerpt = (content: string | null, maxLength = 100) => {
   if (!content) return "";
 
   const cleaned = content.replace(/\s+/g, " ").trim();
