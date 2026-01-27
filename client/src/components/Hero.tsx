@@ -58,6 +58,7 @@ const Hero = () => {
               <p className="mt-6 text-center text-sm text-red-300">{error}</p>
             )}
 
+            {/* Hover Cards */}
             {!loading && !error && (
               <div className="mt-10 flex items-center justify-center gap-5">
                 {news.slice(0, 5).map((item, idx) => (
