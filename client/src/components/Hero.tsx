@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../utils/api.ts";
 import { toExcerpt } from "../utils/text.ts";
+import search from "../assets/react.svg";
 
 // Represents the structure of a news article object returned by the server
 type NewsItem = {
@@ -47,6 +48,8 @@ const Hero = () => {
           <div className="mx-auto -mt-16 max-w-2xl rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xs shadow-[0_0_40px_rgba(0,0,0,0.6)]">
             <h1 className="flex text-xl">Top stories &gt;</h1>
 
+            <hr className="opacity-16 mt-3" />
+
             {/* Loading / error states */}
             {loading && (
               <p className="mt-6 text-center text-sm text-gray-300">
@@ -88,12 +91,13 @@ const Hero = () => {
               </div>
             )}
 
-            <p className="mt-2 text-sm text-gray-300">
-              The easiest way to power your news with AI
-            </p>
-
             <button className="mt-4 rounded-full border border-white/20 bg-white/10 px-6 py-2 text-xs text-white hover:bg-white/20 transition">
-              Get started
+              <img
+                src={search}
+                alt="Search icon"
+                className="inline-block w-4 h-4 mr-2"
+              />
+              Search for topics
             </button>
           </div>
         </div>

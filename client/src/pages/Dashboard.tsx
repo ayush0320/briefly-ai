@@ -104,17 +104,6 @@ const Dashboard = () => {
               )}
             </div>
           </div>
-
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg">
-            <h3 className="text-lg font-semibold">Refresh schedule</h3>
-            <p className="mt-2 text-sm text-gray-300">
-              New summaries every <span className="text-white">60 minutes</span>
-              .
-            </p>
-            <button className="mt-4 rounded-full bg-white/10 px-4 py-2 text-xs hover:bg-white/20">
-              Update preferences
-            </button>
-          </div>
         </aside>
       </div>
     </div>
