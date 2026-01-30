@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../utils/api.ts";
 import { toExcerpt } from "../utils/text.ts";
-import search from "../assets/react.svg";
+import search from "../assets/search.svg";
 
 // Represents the structure of a news article object returned by the server
 type NewsItem = {
@@ -95,7 +95,7 @@ const Hero = () => {
               <img
                 src={search}
                 alt="Search icon"
-                className="inline-block w-4 h-4 mr-2"
+                className="inline-block w-4 h-4 mr-2 invert"
               />
               Search for topics
             </button>

@@ -14,13 +14,7 @@ const router = express.Router();
 router.get("/public", async (req, res) => {
   try {
     // Use default topics
-    const topics = [
-      "India",
-      "International",
-      "Technology",
-      "Sports",
-      "Entertainment",
-    ];
+    const topics = ["India"];
     const articles = await fetchNewsByTopic(topics);
 
     return res.json({

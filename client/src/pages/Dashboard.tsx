@@ -1,85 +1,152 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import api from "../utils/api.ts";
+
+// News item shape based on the /api/news/public response
+
+type NewsItem = {
+  title: string;
+  url: string;
+  image: string | null;
+  content: string | null;
+};
+
+// A helper type for the grid:
+// each topic maps to one chosen article (or null if not found)
+type TopicArticleMap = Record<string, NewsItem | null>;
 
 const Dashboard = () => {
-  const articles = [
-    {
-      title: "AI firms race to open-source safer models",
-      summary:
-        "Major labs are publishing safety-aligned models as competition intensifies.",
-      credibility: "High",
-      score: 92,
-      tag: "Technology",
-    },
-    {
-      title: "Global markets react to energy price shifts",
-      summary:
-        "Energy futures dipped after revised supply forecasts from key producers.",
-      credibility: "Medium",
-      score: 74,
-      tag: "Finance",
-    },
-    {
-      title: "New guidelines for AI in education",
-      summary:
-        "Schools receive a framework for responsible AI usage in classrooms.",
-      credibility: "High",
-      score: 88,
-      tag: "Education",
-    },
+  const topics = [
+    "India",
+    "International",
+    "Technology",
+    "Sports",
+    "Entertainment",
+    "Science",
   ];
+
+  // Basic loading + error states for a clean UX.
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  /**
+   * Simple keyword matcher:
+   * - looks in the title or content
+   * - ignores case
+   */
+  const matchesTopic = (article: NewsItem, topic: string) => {
+    const haystack =
+      `${article.title ?? ""} ${article.content ?? ""}`.toLowerCase();
+    return haystack.includes(topic.toLowerCase());
+  };
+
+  /**
+   * Picks a single article for each topic.
+   * Strategy:
+   * 1) Find a match by keyword.
+   * 2) If no match, fall back to the next unused article.
+   */
+  const buildTopicMap = (articles: NewsItem[]): TopicArticleMap => {
+    const usedUrls = new Set<string>();
+    const fallbackQueue = [...articles];
+
+    return topics.reduce<TopicArticleMap>((acc, topic) => {
+      const matched = articles.find(
+        (article) => !usedUrls.has(article.url) && matchesTopic(article, topic),
+      );
+
+      const chosen =
+        matched ?? fallbackQueue.find((a) => !usedUrls.has(a.url)) ?? null;
+
+      if (chosen) {
+        usedUrls.add(chosen.url);
+      }
+
+      acc[topic] = chosen;
+      return acc;
+    }, {});
+  };
+
+  /**
+   * Fetch public news once when the Dashboard loads.
+   */
+  useEffect(() => {
+    const loadTopicNews = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await api.get("/api/news/public");
+        const articles: NewsItem[] = res.data?.articles || [];
+
+        setTopicArticles(buildTopicMap(articles));
+      } catch (err: any) {
+        setError(err?.response?.data?.message || "Failed to load topic news.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTopicNews();
+  }, []);
+
   return (
     <div>
       {/* Main layout */}
       <div className="relative z-10 mx-auto grid max-w-6xl gap-8 px-6 py-10 md:grid-cols-[2fr_1fr]">
-        {/* Left column: news cards */}
+        {/* Left column: topic grid */}
         <section>
-          <h1 className="text-2xl font-semibold">Your AI‑powered brief</h1>
+          <h1 className="text-2xl font-semibold">Topic-wise highlights</h1>
           <p className="mt-2 text-sm text-gray-300">
-            Summarized articles with credibility signals, updated every hour.
+            One featured story per topic with a quick visual preview.
           </p>
 
-          <div className="mt-6 space-y-6">
-            {articles.map((article) => (
-              <article
-                key={article.title}
-                className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg shadow-[0_0_30px_rgba(0,0,0,0.4)]"
-              >
-                <div className="flex items-center justify-between text-xs text-gray-400">
-                  <span className="rounded-full border border-white/10 px-3 py-1">
-                    {article.tag}
-                  </span>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs ${
-                      article.credibility === "High"
-                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30"
-                        : "bg-yellow-500/20 text-yellow-300 border border-yellow-400/30"
-                    }`}
-                  >
-                    Credibility: {article.credibility}
-                  </span>
-                </div>
+          {/* Loading / error states */}
+          {loading && (
+            <p className="mt-6 text-sm text-gray-300">Loading topics…</p>
+          )}
 
-                <h2 className="mt-4 text-lg font-semibold">{article.title}</h2>
-                <p className="mt-2 text-sm text-gray-300">{article.summary}</p>
+          {error && <p className="mt-6 text-sm text-red-300">{error}</p>}
 
-                <div className="mt-4 flex items-center justify-between text-xs text-gray-400">
-                  <span>Confidence score</span>
-                  <span className="text-white font-semibold">
-                    {article.score}%
-                  </span>
-                </div>
-                <div className="mt-2 h-2 w-full rounded-full bg-white/10">
+          {!loading && !error && (
+            <div className="mt-6 grid gap-6 md:grid-cols-2">
+              {topics.map((topic) => {
+                const article = topicArticles[topic];
+
+                return (
                   <div
-                    className="h-2 rounded-full bg-[color:var(--color-neon-blue)] shadow-[0_0_10px_rgba(76,195,255,0.6)]"
-                    style={{ width: `${article.score}%` }}
-                  />
-                </div>
-              </article>
-            ))}
-          </div>
+                    key={topic}
+                    className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-lg shadow-[0_0_25px_rgba(0,0,0,0.35)]"
+                  >
+                    {/* Image */}
+                    <div className="h-40 w-full overflow-hidden">
+                      <img
+                        src={
+                          article?.image ||
+                          "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=900&q=80"
+                        }
+                        alt={article?.title || `${topic} news`}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4">
+                      <span className="inline-flex rounded-full border border-white/10 px-3 py-1 text-xs text-gray-300">
+                        {topic}
+                      </span>
+
+                      <h3 className="mt-3 text-sm font-semibold text-white">
+                        {article?.title || "No headline available yet"}
+                      </h3>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </section>
 
-        {/* Right column: sidebar */}
+        {/* Right column: sidebar (unchanged) */}
         <aside className="space-y-6">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg">
             <h3 className="text-lg font-semibold">Today’s insight</h3>
