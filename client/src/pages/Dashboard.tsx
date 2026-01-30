@@ -29,6 +29,13 @@ const Dashboard = () => {
   const [error, setError] = useState<string | null>(null);
 
   /**
+   * Topic article map state:
+   * - Each topic points to one chosen article (or null).
+   * - This powers the grid in the UI.
+   */
+  const [topicArticles, setTopicArticles] = useState<TopicArticleMap>({});
+
+  /**
    * Simple keyword matcher:
    * - looks in the title or content
    * - ignores case
@@ -80,6 +87,8 @@ const Dashboard = () => {
 
         setTopicArticles(buildTopicMap(articles));
       } catch (err: any) {
+        console.error("Dashboard API error:", err);
+        setError(err?.response?.data?.message || "Failed to load topic news.");
         setError(err?.response?.data?.message || "Failed to load topic news.");
       } finally {
         setLoading(false);
@@ -92,13 +101,10 @@ const Dashboard = () => {
   return (
     <div>
       {/* Main layout */}
-      <div className="relative z-10 mx-auto grid max-w-6xl gap-8 px-6 py-10 md:grid-cols-[2fr_1fr]">
+      <div className="relative z-10 mx-auto grid max-w-6xl gap-8 px-6 py-10 ">
         {/* Left column: topic grid */}
         <section>
-          <h1 className="text-2xl font-semibold">Topic-wise highlights</h1>
-          <p className="mt-2 text-sm text-gray-300">
-            One featured story per topic with a quick visual preview.
-          </p>
+          <h1 className="text-2xl font-semibold">Topic-wise highlights &gt;</h1>
 
           {/* Loading / error states */}
           {loading && (
@@ -145,33 +151,6 @@ const Dashboard = () => {
             </div>
           )}
         </section>
-
-        {/* Right column: sidebar (unchanged) */}
-        <aside className="space-y-6">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg">
-            <h3 className="text-lg font-semibold">Today’s insight</h3>
-            <p className="mt-2 text-sm text-gray-300">
-              Most articles about AI governance now cite independent safety
-              audits.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-lg">
-            <h3 className="text-lg font-semibold">Topics you follow</h3>
-            <div className="mt-3 flex flex-wrap gap-2 text-xs text-gray-300">
-              {["AI", "Finance", "Climate", "Health", "Education"].map(
-                (topic) => (
-                  <span
-                    key={topic}
-                    className="rounded-full border border-white/10 px-3 py-1 hover:bg-white/10"
-                  >
-                    {topic}
-                  </span>
-                ),
-              )}
-            </div>
-          </div>
-        </aside>
       </div>
     </div>
   );
