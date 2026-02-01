@@ -4,6 +4,9 @@ import Navbar from "./components/Navbar.tsx";
 import Hero from "./components/Hero.tsx";
 import Footer from "./components/Footer.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import Login from "./pages/Login.tsx";
+import Register from "./pages/Register.tsx";
+import Preferences from "./pages/Preferences.tsx";
 
 const App = () => {
   return (
@@ -22,6 +25,14 @@ const App = () => {
 
       {/* Footer */}
       <Footer />
+
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/preferences" element={<Preferences />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 };

@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../utils/api";
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,20 +15,30 @@ const Login = () => {
     e.preventDefault();
     setError("");
     try {
-      const res = await api.post("/api/auth/login", form);
-      localStorage.setItem("token", res.data.token);
-      navigate("/dashboard");
+      await api.post("/api/auth/register", form);
+      navigate("/login");
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Login failed.");
+      setError(err?.response?.data?.message || "Registration failed.");
     }
   };
 
   return (
     <div className="flex flex-col items-center pt-20">
       <div className="bg-white/10 backdrop-blur-md max-w-md w-full p-8 rounded-2xl shadow-lg border border-white/10">
-        <h2 className="text-xl font-bold mb-6">Sign in to Briefly AI</h2>
+        <h2 className="text-xl font-bold mb-6">
+          Create your Briefly AI account
+        </h2>
         {error && <div className="mb-4 text-sm text-red-400">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="name"
+            type="text"
+            required
+            className="w-full rounded bg-white/10 px-3 py-2 outline-none border border-white/10"
+            placeholder="Your name"
+            value={form.name}
+            onChange={handleChange}
+          />
           <input
             name="email"
             type="email"
@@ -51,16 +61,16 @@ const Login = () => {
             type="submit"
             className="rounded-full bg-[color:var(--color-neon-blue)] text-white shadow px-8 py-2 mt-2 w-full"
           >
-            Log in
+            Register
           </button>
         </form>
         <div className="text-xs text-gray-400 mt-4">
-          New here?{" "}
+          Have an account?{" "}
           <Link
-            to="/register"
+            to="/login"
             className="underline text-[color:var(--color-neon-blue)]"
           >
-            Register
+            Log in
           </Link>
         </div>
       </div>
@@ -68,4 +78,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
