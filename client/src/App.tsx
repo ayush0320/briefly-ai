@@ -4,25 +4,38 @@ import Navbar from "./components/Navbar.tsx";
 import Hero from "./components/Hero.tsx";
 import Footer from "./components/Footer.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import Login from "./pages/Login.tsx";
+import Register from "./pages/Register.tsx";
+import Preferences from "./pages/Preferences.tsx";
+import Saved from "./pages/Saved.tsx";
+
+const Home = () => (
+  <>
+    <Hero />
+    <Dashboard />
+  </>
+);
 
 const App = () => {
   return (
-    <div className="min-h-screen bg-[color:var(--color-midnight)] relative overflow-hidden">
-      {/* Background glow */}
-      <div className="glow-ring absolute inset-0 blur-3xl opacity-60"></div>
+    <BrowserRouter>
+      <div className="min-h-screen bg-[color:var(--color-midnight)] relative overflow-hidden">
+        <div className="glow-ring absolute inset-0 blur-3xl opacity-60"></div>
 
-      {/* Navbar */}
-      <Navbar />
+        <Navbar />
 
-      {/* Hero section */}
-      <Hero />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/preferences" element={<Preferences />} />
+          <Route path="/saved" element={<Saved />} />
+        </Routes>
 
-      {/* Dashboard */}
-      <Dashboard />
-
-      {/* Footer */}
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </BrowserRouter>
   );
 };
 
