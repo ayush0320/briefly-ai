@@ -112,4 +112,14 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// @route   POST /api/auth/logout
+// @desc    Clear auth cookie to log out
+// @access  Public
+router.post("/logout", (req, res) => {
+  // Clear the same cookie that was set during login/register
+  res.clearCookie("briefly_token", cookieOptions);
+
+  return res.status(200).json({ message: "Logged out successfully" });
+});
+
 export default router;

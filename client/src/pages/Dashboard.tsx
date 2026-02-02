@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../utils/api.ts";
 import { toExcerpt } from "../utils/text.ts";
+import { Link } from "react-router-dom";
 
 type NewsItem = {
   title: string;
@@ -25,8 +26,6 @@ const Dashboard = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [topicArticles, setTopicArticles] = useState<TopicArticleMap>({});
-  const [savedUrls, setSavedUrls] = useState<string[]>([]);
-  const [canSave, setCanSave] = useState(true);
 
   const matchesTopic = (article: NewsItem, topic: string) => {
     const haystack =
@@ -53,35 +52,6 @@ const Dashboard = () => {
       acc[topic] = chosen;
       return acc;
     }, {});
-  };
-
-  const loadSaved = async () => {
-    try {
-      const res = await api.get("/api/user/saved");
-      const urls = (res.data?.savedArticles || []).map((a: NewsItem) => a.url);
-      setSavedUrls(urls);
-      setCanSave(true);
-    } catch {
-      setCanSave(false);
-    }
-  };
-
-  const toggleSave = async (article: NewsItem) => {
-    if (!canSave) return;
-
-    const isSaved = savedUrls.includes(article.url);
-
-    try {
-      if (isSaved) {
-        await api.delete("/api/user/saved", { data: { url: article.url } });
-        setSavedUrls((prev) => prev.filter((u) => u !== article.url));
-      } else {
-        await api.post("/api/user/saved", article);
-        setSavedUrls((prev) => [article.url, ...prev]);
-      }
-    } catch (err) {
-      console.error("Save failed:", err);
-    }
   };
 
   useEffect(() => {
@@ -119,7 +89,6 @@ const Dashboard = () => {
     };
 
     loadTopicNews();
-    loadSaved();
   }, []);
 
   return (
@@ -138,7 +107,6 @@ const Dashboard = () => {
             <div className="mt-6 grid gap-6 md:grid-cols-2">
               {topics.map((topic) => {
                 const article = topicArticles[topic];
-                const isSaved = article && savedUrls.includes(article.url);
 
                 return (
                   <div
@@ -162,7 +130,23 @@ const Dashboard = () => {
                       </span>
 
                       <h3 className="mt-3 text-sm font-semibold text-white">
-                        {article?.title || "No headline available yet"}
+                        {article ? (
+                          <Link
+                            to="/credibility"
+                            state={{
+                              title: article.title,
+                              image: article.image,
+                              content: article.content,
+                              url: article.url,
+                              credibilityScore: 70, // placeholder score (replace later with AI)
+                            }}
+                            className="hover:underline text-[color:var(--color-neon-blue)]"
+                          >
+                            {article.title}
+                          </Link>
+                        ) : (
+                          "No headline available yet"
+                        )}
                       </h3>
 
                       {article?.content && (
@@ -181,18 +165,6 @@ const Dashboard = () => {
                           >
                             Read full article
                           </a>
-                          <button
-                            type="button"
-                            disabled={!canSave}
-                            onClick={() => toggleSave(article)}
-                            className={`text-xs px-3 py-1 rounded-full border ${
-                              isSaved
-                                ? "bg-[color:var(--color-neon-blue)] text-white"
-                                : "border-white/20 text-gray-200"
-                            }`}
-                          >
-                            {isSaved ? "Saved" : "Save"}
-                          </button>
                         </div>
                       )}
                     </div>

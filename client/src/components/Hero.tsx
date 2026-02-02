@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../utils/api.ts";
 import { toExcerpt } from "../utils/text.ts";
 import search from "../assets/search.svg";
+import { Link } from "react-router-dom";
 
 // Represents the structure of a news article object returned by the server
 type NewsItem = {

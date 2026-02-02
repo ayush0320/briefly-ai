@@ -7,7 +7,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
 import Preferences from "./pages/Preferences.tsx";
-import Saved from "./pages/Saved.tsx";
+import Credibility from "./pages/Credibility.tsx";
 
 const Home = () => (
   <>
@@ -30,7 +30,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/preferences" element={<Preferences />} />
-          <Route path="/saved" element={<Saved />} />
+          <Route path="/credibility" element={<Credibility />} />
         </Routes>
 
         <Footer />

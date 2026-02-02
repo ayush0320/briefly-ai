@@ -1,9 +1,51 @@
-import React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import api from "../utils/api";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Track if the user is logged in
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   // Navigation links
   const mainLinks = ["Home", "About", "Pages", "Contact"];
+
+  // Check auth status whenever route changes
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkAuth = async () => {
+      try {
+        // If this succeeds, the user is logged in
+        await api.get("/api/user/profile");
+        if (isMounted) setIsAuthenticated(true);
+      } catch {
+        // If it fails, user is not logged in
+        if (isMounted) setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [location.pathname]);
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await api.post("/api/auth/logout");
+    } finally {
+      // Clear any token you may have stored locally
+      localStorage.removeItem("token");
+
+      setIsAuthenticated(false);
+      navigate("/");
+    }
+  };
 
   return (
     <div>
@@ -22,12 +64,25 @@ const Navbar = () => {
                 {item}
               </a>
             ))}
-            <button className="rounded-full border border-white/20 px-4 py-1 pb-2 text-xs text-gray-200 hover:bg-white/10">
-              <a href="/login">Log in</a>
-            </button>
-            <button className="rounded-full bg-white/10 px-4 py-1 pb-2 text-xs text-white shadow-[0_0_10px_rgba(76,195,255,0.7)] hover:bg-white/20">
-              <a href="/register">Sign up</a>
-            </button>
+
+            {/* Show either Login/Signup OR Logout based on auth */}
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="rounded-full border border-white/20 px-4 py-1 pb-2 text-xs text-gray-200 hover:bg-white/10"
+              >
+                Log out
+              </button>
+            ) : (
+              <>
+                <button className="rounded-full border border-white/20 px-4 py-1 pb-2 text-xs text-gray-200 hover:bg-white/10">
+                  <a href="/login">Log in</a>
+                </button>
+                <button className="rounded-full bg-white/10 px-4 py-1 pb-2 text-xs text-white shadow-[0_0_10px_rgba(76,195,255,0.7)] hover:bg-white/20">
+                  <a href="/register">Sign up</a>
+                </button>
+              </>
+            )}
           </div>
         </nav>
       </header>

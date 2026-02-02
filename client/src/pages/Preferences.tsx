@@ -94,7 +94,7 @@ const Preferences = () => {
                 ))}
               </div>
             </div>
-            <div>
+            {/* <div>
               <label className="mb-2 block font-semibold">
                 Refresh Frequency (minutes)
               </label>
@@ -106,12 +106,12 @@ const Preferences = () => {
                 onChange={(e) => setRefreshMinutes(Number(e.target.value))}
                 className="w-20 rounded bg-white/10 px-2 py-1 border border-white/10 text-white"
               />
-            </div>
+            </div> */}
             <button
               type="submit"
               className="rounded-full bg-[color:var(--color-neon-blue)] text-white shadow px-8 py-2 w-full"
             >
-              Save Preferences
+              <a href="/">Save Preferences</a>
             </button>
           </form>
         )}

@@ -12,17 +12,6 @@ const userSchema = new mongoose.Schema(
       topics: { type: [String], default: [] },
       refreshMinutes: { type: Number, default: 60 },
     },
-
-    // Saved articles per user
-    savedArticles: [
-      {
-        title: String,
-        url: { type: String, required: true },
-        image: String,
-        content: String,
-        savedAt: { type: Date, default: Date.now },
-      },
-    ],
   },
   { timestamps: true },
 );
