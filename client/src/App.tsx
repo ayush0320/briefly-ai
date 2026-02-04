@@ -8,7 +8,8 @@ import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
 import Preferences from "./pages/Preferences.tsx";
 import Credibility from "./pages/Credibility.tsx";
-import Search from "./pages/Search.tsx";
+import Contact from "./pages/Contact.tsx";
+import About from "./pages/About.tsx";
 
 const Home = () => (
   <>
@@ -28,7 +29,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/search" element={<Search />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/preferences" element={<Preferences />} />

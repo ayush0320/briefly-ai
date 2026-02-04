@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import api from "../utils/api";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const location = useLocation(); // To detect route changes for auth check
 
   // Track if the user is logged in
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Navigation links
-  const mainLinks = ["Home", "About", "Pages", "Contact"];
+  // Navigation links (label + route)
+  const mainLinks = [
+    { label: "Home", to: "/" },
+    { label: "Dashboard", to: "/dashboard" },
+    { label: "Contact", to: "/contact" },
+  ];
 
   // Check auth status whenever route changes
   useEffect(() => {
@@ -52,17 +56,21 @@ const Navbar = () => {
       <header className="relative z-10">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
           <div className="flex items-center gap-2 text-lg font-semibold">
-            <a href="/">
+            <Link to="/">
               <span className="text-white">🌐</span>
               Briefly
-            </a>
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-300">
             {mainLinks.map((item) => (
-              <a key={item} href="#" className="hover:text-white transition">
-                {item}
-              </a>
+              <Link
+                key={item.label}
+                to={item.to}
+                className="hover:text-white transition"
+              >
+                {item.label}
+              </Link>
             ))}
 
             {/* Show either Login/Signup OR Logout based on auth */}
