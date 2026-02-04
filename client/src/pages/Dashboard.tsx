@@ -60,7 +60,7 @@ const Dashboard = () => {
         setLoading(true);
         setError(null);
 
-        // ✅ Try personalized feed first
+        // Try personalized feed first
         let res;
         try {
           res = await api.get("/api/news/feed");
@@ -96,18 +96,15 @@ const Dashboard = () => {
       <div className="relative z-10 mx-auto grid max-w-6xl gap-8 px-6 py-10 ">
         <section>
           <h1 className="text-2xl font-semibold">Topic-wise highlights &gt;</h1>
-
+          {/* ...render articles... */}
           {loading && (
             <p className="mt-6 text-sm text-gray-300">Loading topics…</p>
           )}
-
           {error && <p className="mt-6 text-sm text-red-300">{error}</p>}
-
           {!loading && !error && (
             <div className="mt-6 grid gap-6 md:grid-cols-2">
               {topics.map((topic) => {
                 const article = topicArticles[topic];
-
                 return (
                   <div
                     key={topic}
