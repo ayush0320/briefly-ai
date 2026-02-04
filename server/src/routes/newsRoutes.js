@@ -70,4 +70,38 @@ router.get("/feed", auth, async (req, res) => {
   }
 });
 
+/**
+ * Protected search endpoint
+ * GET /api/news/search?q=technology
+ * Requires login cookie (auth middleware)
+ */
+
+router.get("/search", auth, async (req, res) => {
+  try {
+    const rawQuery = (req.query.q ?? "").toString().trim();
+
+    if (!rawQuery) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    // Allow comma-separated topics if desired
+    const topics = rawQuery
+      .split(",")
+      .map((topic) => topic.trim())
+      .filter(Boolean);
+
+    const articles = await fetchNewsByTopic(topics);
+
+    return res.json({
+      topics,
+      count: articles.length,
+      articles,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server Error", error: error.message });
+  }
+});
+
 export default router;

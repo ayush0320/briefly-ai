@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../utils/api.ts";
 import { toExcerpt } from "../utils/text.ts";
 import search from "../assets/search.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Represents the structure of a news article object returned by the server
 type NewsItem = {
@@ -16,6 +16,14 @@ const Hero = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Track login status (cookie-based auth)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Track the input text (keeps the input controlled)
+  const [query, setQuery] = useState("");
+
+  const navigate = useNavigate();
 
   // Fetch public news for homepage
   useEffect(() => {
@@ -35,6 +43,38 @@ const Hero = () => {
 
     loadNews();
   }, []);
+
+  // Check login state using the cookie
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkAuth = async () => {
+      try {
+        // If this request succeeds, the user is logged in
+        await api.get("/api/user/profile");
+        if (isMounted) setIsAuthenticated(true);
+      } catch {
+        // If it fails, user is not logged in
+        if (isMounted) setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleSearchSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const trimmed = query.trim();
+    if (!isAuthenticated || !trimmed) return;
+
+    // Send the user to the search results page
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+  };
 
   return (
     <div>
@@ -92,35 +132,54 @@ const Hero = () => {
               </div>
             )}
 
-            <button className="mt-4 rounded-full border border-white/20 bg-white/10 px-6 py-2 text-xs text-white hover:bg-white/20 transition">
-              <img
-                src={search}
-                alt="Search icon"
-                className="inline-block w-4 h-4 mr-2 invert"
-              />
-              Search for topics
-            </button>
+            {/* Search bar */}
+            <form
+              onSubmit={handleSearchSubmit}
+              className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
+            >
+              <div className="relative w-full max-w-sm">
+                <img
+                  src={search}
+                  alt="Search icon"
+                  className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 invert opacity-80"
+                />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  disabled={!isAuthenticated}
+                  aria-disabled={!isAuthenticated}
+                  placeholder={
+                    isAuthenticated
+                      ? "Search for topics"
+                      : "Log in to search for topics"
+                  }
+                  className={`w-full rounded-full border border-white/20 bg-white/10 py-2 pl-10 pr-4 text-xs text-white shadow-[0_0_15px_rgba(76,195,255,0.4)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-neon-blue)] ${
+                    !isAuthenticated
+                      ? "cursor-not-allowed opacity-60"
+                      : "hover:bg-white/20"
+                  }`}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={!isAuthenticated || !query.trim()}
+                className={`rounded-full border border-white/20 px-4 py-2 text-xs text-white transition ${
+                  !isAuthenticated || !query.trim()
+                    ? "cursor-not-allowed opacity-60"
+                    : "hover:bg-white/20"
+                }`}
+              >
+                Search
+              </button>
+            </form>
           </div>
         </div>
       </div>
 
       {/* CTA Panel */}
-      {/* <div className="mt-16 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-lg shadow-[0_0_40px_rgba(0,0,0,0.35)]">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div>
-            <h2 className="text-xl font-semibold">
-              The easiest way to power your news with AI
-            </h2>
-            <p className="mt-2 text-sm text-gray-300 max-w-xl">
-              Summarize articles, check credibility, and deliver personalized
-              feeds in seconds.
-            </p>
-          </div>
-          <button className="rounded-full bg-white/10 px-6 py-2 text-xs text-white shadow-[0_0_15px_rgba(76,195,255,0.4)] hover:bg-white/20">
-            Get started
-          </button>
-        </div>
-      </div> */}
+      {/* (rest of your component stays unchanged) */}
     </div>
   );
 };
