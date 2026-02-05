@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import api from "../utils/api";
+import logo from "../assets/logo.svg";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -57,8 +58,10 @@ const Navbar = () => {
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
           <div className="flex items-center gap-2 text-lg font-semibold">
             <Link to="/">
-              <span className="text-white">🌐</span>
-              Briefly
+              <div className="relative flex items-center gap-2">
+                <img className="h-8 w-8" src={logo} alt="Logo" />
+                Briefly
+              </div>
             </Link>
           </div>
 
