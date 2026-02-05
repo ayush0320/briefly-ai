@@ -1,9 +1,12 @@
 import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // Create an Axios instance with a base URL
 // Cookie based authentication
 const api = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: process.env.VITE_BASE_URL || "http://localhost:5000",
   withCredentials: true,
 });
 
