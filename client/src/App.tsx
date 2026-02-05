@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+// import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar.tsx";
 import Hero from "./components/Hero.tsx";
 import Footer from "./components/Footer.tsx";

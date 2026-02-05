@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 
 // Contact data in one place (easy to update later)
 const contactLinks = [

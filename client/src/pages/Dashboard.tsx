@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../utils/api.ts";
 import { toExcerpt } from "../utils/text.ts";
 import { Link } from "react-router-dom";
