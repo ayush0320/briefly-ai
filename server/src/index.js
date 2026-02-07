@@ -20,10 +20,25 @@ const app = express();
 // Connect to MongoDB
 await connectDB();
 
+// CORS configuration to allow requests from the frontend
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://briefly-ai-flame.vercel.app",
+];
+
 // Allow cookies from the frontend (Vite default: 5173)
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173/",
+    origin: (origin, callback) => {
+      // allow requests with no origin (like Postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );

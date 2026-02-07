@@ -10,6 +10,7 @@ import Preferences from "./pages/Preferences.tsx";
 import Credibility from "./pages/Credibility.tsx";
 import Contact from "./pages/Contact.tsx";
 import About from "./pages/About.tsx";
+import Search from "./pages/Search.tsx";
 
 const Home = () => (
   <>
@@ -35,6 +36,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/preferences" element={<Preferences />} />
           <Route path="/credibility" element={<Credibility />} />
+          <Route path="/search" element={<Search />} />
         </Routes>
 
         <Footer />
