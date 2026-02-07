@@ -91,15 +91,6 @@ const Credibility = () => {
             {article.content ||
               "Full article content isn’t available from the news API, so we’re showing the best summary we received. Use the link below to read the original source."}
           </p>
-
-          {analysis && (
-            <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-gray-200">
-              <div className="font-semibold">AI Summary</div>
-              <p className="mt-2">{analysis.summary}</p>
-              <div className="mt-4 font-semibold">Credibility analysis</div>
-              <p className="mt-2">{analysis.credibility}</p>
-            </div>
-          )}
         </section>
 
         {/* RIGHT: Credibility meter */}
@@ -123,6 +114,16 @@ const Credibility = () => {
               </div>
               <div className="mt-4 text-3xl font-bold">{score}%</div>
             </>
+          )}
+
+          {analysis && !loading && !error && (
+            <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-gray-200">
+              <div className="font-semibold">AI Summary</div>
+              <p className="mt-2">{analysis.summary}</p>
+
+              <div className="mt-4 font-semibold">Credibility analysis</div>
+              <p className="mt-2">{analysis.credibility}</p>
+            </div>
           )}
         </aside>
       </div>

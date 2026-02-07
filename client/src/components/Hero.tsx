@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../utils/api.ts";
 import { toExcerpt } from "../utils/text.ts";
-import search from "../assets/search.svg";
 import { useNavigate } from "react-router-dom";
 
 // Represents the structure of a news article object returned by the server
@@ -16,6 +15,23 @@ const Hero = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const handleAnalyzeSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const trimmed = query.trim();
+    if (!trimmed) return;
+
+    // Send user to credibility page with pasted content
+    navigate("/credibility", {
+      state: {
+        title: "User submitted article",
+        content: trimmed,
+        url: null,
+        image: null,
+      },
+    });
+  };
 
   // Track login status (cookie-based auth)
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -66,16 +82,6 @@ const Hero = () => {
     };
   }, []);
 
-  const handleSearchSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const trimmed = query.trim();
-    if (!isAuthenticated || !trimmed) return;
-
-    // Send the user to the search results page
-    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
-  };
-
   return (
     <div>
       <div className="relative z-12 mx-auto max-w-6xl px-6 py-14">
@@ -108,9 +114,9 @@ const Hero = () => {
                 {news.slice(0, 5).map((item, idx) => (
                   <div
                     key={`${item.url}-${idx}`}
-                    className="group relative h-70 w-16 md:w-25 mt-0 overflow-hidden rounded-[25px] bg-white/10 shadow-[0_0_25px_rgba(0,0,0,0.4)] transition-all duration-400 hover:w-72"
+                    tabIndex={0}
+                    className="group relative h-70 w-16 md:w-25 overflow-hidden rounded-[25px] bg-white/10 shadow-[0_0_25px_rgba(0,0,0,0.4)] transition-all duration-400 md:hover:w-72 focus:w-72 focus:outline-none focus:ring-2 focus:ring-[color:var(--color-neon-blue)]"
                   >
-                    {/* Image */}
                     <img
                       src={
                         item.image ||
@@ -120,66 +126,67 @@ const Hero = () => {
                       className="h-full w-full object-cover"
                     />
 
-                    {/* Hover overlay */}
-                    <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                      <h3 className="text-lg font-semibold">{item.title}</h3>
-                      <p className="mt-1 text-sm text-gray-200">
+                    {/* Overlay */}
+                    <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus:opacity-100 group-focus-within:opacity-100">
+                      <h3 className="text-lg font-semibold line-clamp-2">
+                        {item.title}
+                      </h3>
+                      <p className="mt-1 text-sm text-gray-200 line-clamp-3">
                         {toExcerpt(item.content)}
                       </p>
+
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 text-xs underline text-[color:var(--color-neon-blue)]"
+                      >
+                        Read full article →
+                      </a>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-
-            {/* Search bar */}
-            <form
-              onSubmit={handleSearchSubmit}
-              className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
-            >
-              <div className="relative w-full max-w-sm">
-                <img
-                  src={search}
-                  alt="Search icon"
-                  className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 invert opacity-80"
-                />
-                <input
-                  type="text"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  disabled={!isAuthenticated}
-                  aria-disabled={!isAuthenticated}
-                  placeholder={
-                    isAuthenticated
-                      ? "Search for topics"
-                      : "Log in to search for topics"
-                  }
-                  className={`w-full rounded-full border border-white/20 bg-white/10 py-2 pl-10 pr-4 text-xs text-white shadow-[0_0_15px_rgba(76,195,255,0.4)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-neon-blue)] ${
-                    !isAuthenticated
-                      ? "cursor-not-allowed opacity-60"
-                      : "hover:bg-white/20"
-                  }`}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={!isAuthenticated || !query.trim()}
-                className={`rounded-full border border-white/20 px-4 py-2 text-xs text-white transition ${
-                  !isAuthenticated || !query.trim()
-                    ? "cursor-not-allowed opacity-60"
-                    : "hover:bg-white/20"
-                }`}
-              >
-                Search
-              </button>
-            </form>
           </div>
+
+          {/* Search section */}
+          <form
+            onSubmit={handleAnalyzeSubmit}
+            className="mt-6 flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center"
+          >
+            <div className="relative w-full max-w-lg">
+              <textarea
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={
+                  isAuthenticated
+                    ? "Paste a full news article here to analyze credibility..."
+                    : "Log in to paste and analyze news content"
+                }
+                rows={4}
+                disabled={!isAuthenticated}
+                aria-disabled={!isAuthenticated}
+                className={`w-full rounded-xl border border-white/20 bg-white/10 p-4 pr-24 text-xs text-white shadow-[0_0_15px_rgba(76,195,255,0.4)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-neon-blue)] resize-none ${
+                  !isAuthenticated ? "cursor-not-allowed opacity-60" : ""
+                }`}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={!isAuthenticated || !query.trim()}
+              className={`rounded-full border border-white/20 px-4 py-2 text-xs text-white transition ${
+                !isAuthenticated || !query.trim()
+                  ? "cursor-not-allowed opacity-60"
+                  : "hover:bg-white/20"
+              }`}
+            >
+              Analyze
+            </button>
+          </form>
         </div>
       </div>
-
-      {/* CTA Panel */}
-      {/* (rest of your component stays unchanged) */}
     </div>
   );
 };
